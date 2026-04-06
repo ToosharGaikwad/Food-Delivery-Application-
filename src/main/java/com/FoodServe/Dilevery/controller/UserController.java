@@ -72,7 +72,7 @@ public class UserController {
         Role role = user.getRole();
 
         // ✅ 3. Generate token (better: include role in token)
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user);
 
         // ✅ 4. Send response
         Map<String, String> response = new HashMap<>();

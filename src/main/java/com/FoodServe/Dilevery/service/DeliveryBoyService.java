@@ -1,6 +1,7 @@
 package com.FoodServe.Dilevery.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.FoodServe.Dilevery.Enum.OrderStatus;
 import com.FoodServe.Dilevery.Userrepository.DeliveryBoyRepository;
@@ -13,11 +14,13 @@ public class DeliveryBoyService {
 
     private final DeliveryBoyRepository deliveryBoyRepository;
     private final OrderRepository orderRepository;
+    
 
     public DeliveryBoyService(DeliveryBoyRepository deliveryBoyRepository,
                               OrderRepository orderRepository) {
         this.deliveryBoyRepository = deliveryBoyRepository;
         this.orderRepository = orderRepository;
+       
     }
 
     public OrdersEntity assignDeliveryBoy(Long orderId, Long boyId) {
@@ -60,8 +63,12 @@ public class DeliveryBoyService {
 
         return deliveryBoyRepository.save(boy);
     }
-
-	
-
-	
+    
+    @DeleteMapping("/delete/{id}")
+    public void deleteBoy(Long id) {
+        DeliveryBoyEntity boy = deliveryBoyRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Delivery boy not found"));
+        deliveryBoyRepository.delete(boy);
+    }
+    
 }

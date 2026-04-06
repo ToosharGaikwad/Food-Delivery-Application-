@@ -27,9 +27,14 @@ public class JwtService {
    
 
     // ✅ GENERATE TOKEN
-    public String generateToken(String email) {
+    public String generateToken(User user) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole().name()); // 🔥 ADD ROLE
+
         return Jwts.builder()
-                .setSubject(email)
+                .setClaims(claims)
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
@@ -58,11 +63,18 @@ public class JwtService {
     return extractExpiration(token).before(new Date());
 }
 
-
+	public Claims extractAllClaims(String token) {
+	    return Jwts.parserBuilder()
+	            .setSigningKey(getKey())
+	            .build()
+	            .parseClaimsJws(token)
+	            .getBody();
+	}
 
 	private Date extractExpiration(String token) {
-	    return Jwts.parser()
-	            .setSigningKey(secret)
+	   return Jwts.parserBuilder()
+	            .setSigningKey(getKey())
+	            .build()
 	            .parseClaimsJws(token)
 	            .getBody()
 	            .getExpiration();

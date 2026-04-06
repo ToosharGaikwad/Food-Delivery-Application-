@@ -53,7 +53,7 @@ public class UserLoginSevice {
             throw new RuntimeException("Invalid password");
         }
         // ✅ Generate JWT token
-        return jwtService.generateToken(user.getEmail());
+        return jwtService.generateToken(user);
     }
    
 }

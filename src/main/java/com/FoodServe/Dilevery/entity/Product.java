@@ -8,7 +8,7 @@ public class Product {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;   // ✅ MUST be Long / Integer
+    private Long id;   
     
     public void setId(Long id) {
         this.id = id;
