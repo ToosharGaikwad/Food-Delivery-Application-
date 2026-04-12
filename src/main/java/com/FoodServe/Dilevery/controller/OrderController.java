@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.FoodServe.Dilevery.dto.OrderRequestDTO;
 import com.FoodServe.Dilevery.entity.OrdersEntity;
 import com.FoodServe.Dilevery.service.OrderService;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController 
 @RequestMapping("/orders")
 public class OrderController {
@@ -21,7 +21,7 @@ public class OrderController {
 
     // 👤 USER + ADMIN → Place order
     @PostMapping
-    @PreAuthorize("hasRole('USER','ADMIN)")
+//    @PreAuthorize("hasRole('USER','ADMIN)")
     public OrdersEntity placeOrder(@RequestBody OrderRequestDTO order){
         return orderService.placeOrder(order);
     }
