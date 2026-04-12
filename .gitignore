@@ -18,3 +18,16 @@ Thumbs.db
 
 # Node (if any frontend)
 node_modules/
+# Angular
+node_modules/
+.angular/
+dist/
+
+# Logs
+npm-debug.log
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/

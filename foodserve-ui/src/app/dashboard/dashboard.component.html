@@ -1,0 +1,18 @@
+<h2>Select Restaurant</h2>
+
+<div
+  *ngFor="let r of restaurants"
+  style="
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+  "
+>
+  <h3>{{ r.name }}</h3>
+  <p>{{ r.address }}</p>
+  <p>{{ r.rating }}</p>
+  <p>{{ r.isopen }}</p>
+
+  <button (click)="viewProducts(r.id)">View Products</button>
+</div>

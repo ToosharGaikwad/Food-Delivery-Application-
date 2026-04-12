@@ -1,0 +1,78 @@
+/* Page heading */
+h2 {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 28px;
+  color: #333;
+}
+
+/* Product container grid */
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Product card */
+.product-card {
+  border-radius: 12px;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Product name */
+.product-card h3 {
+  margin-bottom: 10px;
+  color: #222;
+}
+
+/* Text */
+.product-card p {
+  margin: 5px 0;
+  color: #555;
+}
+
+/* Availability */
+.available {
+  color: green;
+  font-weight: bold;
+}
+
+.not-available {
+  color: red;
+  font-weight: bold;
+}
+
+/* Button */
+.product-card button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Button hover */
+.product-card button:hover {
+  transform: scale(1.05);
+}
+
+/* Disabled button */
+.product-card button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}

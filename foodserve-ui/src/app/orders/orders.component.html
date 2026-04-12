@@ -1,0 +1,35 @@
+<div class="container">
+  <h2>🛒 Place Order</h2>
+
+  <div class="form">
+    <input type="number" [(ngModel)]="newOrder.userId" placeholder="User ID" />
+    <input
+      type="number"
+      [(ngModel)]="newOrder.restaurantId"
+      placeholder="Restaurant ID"
+    />
+
+    <input
+      type="number"
+      [(ngModel)]="newOrder.items[0].productId"
+      placeholder="Product ID"
+    />
+    <input
+      type="number"
+      [(ngModel)]="newOrder.items[0].quantity"
+      placeholder="Quantity"
+    />
+
+    <button (click)="placeOrder()">Place Order</button>
+  </div>
+
+  <hr />
+
+  <h2>📦 All Orders</h2>
+
+  <div *ngFor="let order of orders" class="order-card">
+    <p><strong>Order ID:</strong> {{ order.id }}</p>
+    <p><strong>Status:</strong> {{ order.status }}</p>
+    <p><strong>Total:</strong> {{ order.totalAmount }}</p>
+  </div>
+</div>
