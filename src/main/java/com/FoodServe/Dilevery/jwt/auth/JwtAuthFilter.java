@@ -14,9 +14,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.FoodServe.Dilevery.service.BlacklistService;
+
 import io.jsonwebtoken.Claims;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -24,11 +28,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   
 	private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final BlacklistService blacklistService;
 
     public JwtAuthFilter(JwtService jwtService,
+    		BlacklistService blacklistService,
                          UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.blacklistService = blacklistService;
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -41,9 +48,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 2️⃣ ✅ KEY FIX: If no token, skip JWT processing entirely
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        	 System.out.println("header problem"+authHeader);
             filterChain.doFilter(request, response); // just move on
-//            System.out.println("header problem");
+            
             return;
+           
         }
 
         // 3️⃣ Extract the token (remove "Bearer " prefix)
@@ -63,15 +72,29 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             
+            if (blacklistService.isBlacklisted(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
             
          // ✅ CLEANER — use the authorities already on UserDetails (from User.getAuthorities())
             if (jwtService.isTokenValid(token, userDetails)) {
-            	System.out.println("Authorities: " + userDetails.getAuthorities());
+                // ✅ Extract role from JWT token claims (not from database)
+                Claims claims = jwtService.extractAllClaims(token);
+                String role = (String) claims.get("role");
+                
+                // ✅ Create authorities from JWT role
+                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                if (role != null) {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                    System.out.println("✅ Role from JWT: " + role);
+                }
+                
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
-                                userDetails.getAuthorities() // ✅ Use UserDetails authorities directly
+                                authorities // ✅ Use JWT authorities
                         );
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
@@ -82,4 +105,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+    
 }

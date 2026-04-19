@@ -1,9 +1,12 @@
 package com.FoodServe.Dilevery.controller;
 
 import java.util.List;
+
+
 import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,14 +30,13 @@ public class ProductController {
     }
 
     // ✅ Add product
-//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public Product addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
     }
 
     // ✅ Get all products
-//    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public List<Product> getAllProduct() {
         return productService.getAllProduct();

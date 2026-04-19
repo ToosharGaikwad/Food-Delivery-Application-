@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.*;
 
 import java.util.List;
@@ -24,7 +24,7 @@ import com.FoodServe.Dilevery.jwt.auth.JwtAuthFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+//@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -55,16 +55,21 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/res/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/products/add").permitAll()
-                .requestMatchers("/api/users/login", "/api/users/register").permitAll()
-                .requestMatchers("/api/products/**").permitAll()
-                .requestMatchers("/orders").permitAll()
-                .anyRequest().authenticated()
-            )
-
+            .authorizeHttpRequests(auth -> auth	
+            	    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            	    .requestMatchers("/api/users/login", "/logout", "/api/users/register").permitAll()
+            	    // ✅ DELETE requires ADMIN
+            	    .requestMatchers(HttpMethod.DELETE, "/res/id/**").hasRole("ADMIN")
+            	    // ✅ Public GET endpoints
+            	    .requestMatchers("/res/allRestaurant").permitAll()
+            	    .requestMatchers("/res/{id}").permitAll()
+            	    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+            	    .requestMatchers("/orders").permitAll()
+            	    // ✅ ADMIN-only POST/PUT operations
+            	    .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
+            	    .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+            	    .anyRequest().authenticated()
+            	)
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )

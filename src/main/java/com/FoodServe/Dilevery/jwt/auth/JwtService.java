@@ -1,5 +1,6 @@
 package com.FoodServe.Dilevery.jwt.auth;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.FoodServe.Dilevery.entity.User;
@@ -17,8 +18,8 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-
-    private static String secret = "mySuperSecretKeyForJwtAuthentication12345";
+	@Value("${jwt.secret}")
+    private String secret = "KeyForJwtAuthentication12345678901234567";
 
     private Key getKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
@@ -79,7 +80,7 @@ public class JwtService {
 	            .getBody()
 	            .getExpiration();
 	}
-
+	
 
 
 	

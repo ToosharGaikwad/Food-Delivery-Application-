@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +22,7 @@ import com.FoodServe.Dilevery.dto.LoginRequest;
 import com.FoodServe.Dilevery.dto.RegisterRequest;
 import com.FoodServe.Dilevery.entity.User;
 import com.FoodServe.Dilevery.jwt.auth.JwtService;
+import com.FoodServe.Dilevery.service.BlacklistService;
 import com.FoodServe.Dilevery.service.UserLoginSevice;
 
 
@@ -33,15 +35,19 @@ public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final BlacklistService blacklistService;
 
     public UserController(UserLoginSevice userLoginService,
+    		BlacklistService blacklistService,
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService) {
         this.userLoginService = userLoginService;
+        this.blacklistService=blacklistService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        
     }
 
    
@@ -80,5 +86,16 @@ public class UserController {
         response.put("role", role.name()); // ✅ CORRECT
 
         return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.substring(7);
+
+        // save token in blacklist (DB/Redis)
+        blacklistService.add(token);
+
+        return ResponseEntity.ok("Logged out successfully");
     }
 }
