@@ -1,6 +1,7 @@
 package com.FoodServe.Dilevery.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,16 +41,16 @@ public class RestaurantController {
 	}
 	
 	@GetMapping("/{id}")
-	public Restaurant getRestaurantByid(@PathVariable Long id)
+	public Restaurant getRestaurantByid(@PathVariable("id") Long id)
 	{
-		return restaurantServiceimpl.getRestaurantById(id);
+	    return restaurantServiceimpl.getRestaurantById(id);
 	}
 	
 //	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/id/{id}")
-	public String deleteRestaurant(@PathVariable Long id) {
-		restaurantServiceimpl.deleteRestaurant(id);
-	    return "Restaurant deleted successfully";
+	public Map<String, String> deleteRestaurant(@PathVariable("id") Long id) {
+	    restaurantServiceimpl.deleteRestaurant(id);
+	    return Map.of("message", "Restaurant deleted successfully");
 	}
 	
 
