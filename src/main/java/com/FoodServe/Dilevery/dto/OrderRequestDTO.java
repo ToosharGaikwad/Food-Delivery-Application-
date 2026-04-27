@@ -4,7 +4,7 @@ package com.FoodServe.Dilevery.dto;
 import java.util.List;
 
 public class OrderRequestDTO {
-
+	private String status;
     private Long userId;
     private String paymentMode;
     private List<OrderItemRequestDTO> items;
@@ -34,6 +34,14 @@ public class OrderRequestDTO {
 		this.items = items;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 	
 
     

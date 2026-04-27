@@ -2,7 +2,8 @@ package com.FoodServe.Dilevery.Enum;
 
 public enum OrderStatus {
     PLACED,
-    CONFIRMED,
+    ACCEPTED,
+    
     PREPARING,
     OUT_FOR_DELIVERY,
     DELIVERED,

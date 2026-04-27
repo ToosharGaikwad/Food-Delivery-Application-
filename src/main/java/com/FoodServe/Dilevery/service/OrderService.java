@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.jaxb.SpringDataJaxb.OrderDto;
 import org.springframework.stereotype.Service;
 
 import com.FoodServe.Dilevery.Enum.OrderStatus;
@@ -66,7 +67,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public OrdersEntity getorder(Long orderId) {
+    public OrdersEntity getorder(Long orderId){
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("order not found"));
     }
@@ -74,6 +75,18 @@ public class OrderService {
 	public List<OrdersEntity> Allorders() {
 		
 		return orderRepository.findAll();
+	}
+
+	public OrdersEntity updateStatus(Long id, String status) {
+		 OrdersEntity order = orderRepository.findById(id)
+		            .orElseThrow(() -> new RuntimeException("Order not found"));
+
+		    // Convert String → Enum
+		    OrderStatus newStatus = OrderStatus.valueOf(status.toUpperCase());
+
+		    order.setOrderStatus(newStatus);  // ✅ update entity
+
+		return orderRepository.save(order);
 	}
     
     

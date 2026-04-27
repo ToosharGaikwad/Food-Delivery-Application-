@@ -21,7 +21,7 @@ public class OrderController {
 
     // 👤 USER + ADMIN → Place order
     @PostMapping
-//    @PreAuthorize("hasRole('USER','ADMIN)")
+
     public OrdersEntity placeOrder(@RequestBody OrderRequestDTO order){
         return orderService.placeOrder(order);
     }
@@ -32,6 +32,7 @@ public class OrderController {
     public OrdersEntity getorder(@PathVariable("id") Long id) {
         return orderService.getorder(id);
     }
+    
 
     // 👨‍💼 ADMIN ONLY → View all orders
    
@@ -41,11 +42,12 @@ public class OrderController {
     }
 
     // 🏪 MANAGER + ADMIN → Update order status
-//    @PreAuthorize("hasAnyRole('ADMIN','RESTAURANT_MANAGER')")
-//    @PutMapping("/{id}/status")
-//    public OrdersEntity updateStatus(@PathVariable("id") Long id,
-//                                     @RequestBody String status) {
-//        return orderService.updateStatus(id, status);
-//    }
+
+    @PutMapping("/{id}/status")   // ✅ FIXED
+    public OrdersEntity updateStatus(@PathVariable Long id,
+                                    @RequestBody OrderRequestDTO dto) {
+
+        return orderService.updateStatus(id, dto.getStatus());
+    }
     
 }
