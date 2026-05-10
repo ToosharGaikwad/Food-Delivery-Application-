@@ -54,10 +54,6 @@ public class User implements UserDetails{
     public Long getId() {
         return id;
     }
-    
-   
-   
-
     public Role getRole() {
         return role;
     }
@@ -110,9 +106,5 @@ public class User implements UserDetails{
         return true;
     }
 
-//	@Override
-//	public Collection<? extends GrantedAuthority> getAuthorities() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+
 }

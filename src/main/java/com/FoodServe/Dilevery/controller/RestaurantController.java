@@ -46,7 +46,7 @@ public class RestaurantController {
 	    return restaurantServiceimpl.getRestaurantById(id);
 	}
 	
-//	@PreAuthorize("hasRole('ADMIN')")
+
 	@DeleteMapping("/id/{id}")
 	public Map<String, String> deleteRestaurant(@PathVariable("id") Long id) {
 	    restaurantServiceimpl.deleteRestaurant(id);

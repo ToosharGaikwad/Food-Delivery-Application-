@@ -31,17 +31,15 @@ public class UserLoginSevice {
 
     public User register(RegisterRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())){
             throw new RuntimeException("Email already registered");
         }
         
         User user = new User();
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
-        user.setRole(Role.USER); 
-        // ✅ Correct encoding
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        
+        user.setRole(Role.USER);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));     
         return userRepository.save(user);
     }
     

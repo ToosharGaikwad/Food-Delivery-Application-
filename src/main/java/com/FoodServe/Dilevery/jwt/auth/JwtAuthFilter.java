@@ -48,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 2️⃣ ✅ KEY FIX: If no token, skip JWT processing entirely
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-        	 System.out.println("header problem"+authHeader);
+        	 System.out.println("header problem "+authHeader);
             filterChain.doFilter(request, response); // just move on
             
             return;

@@ -1,6 +1,7 @@
 package com.FoodServe.Dilevery.Enum;
 
 public enum OrderStatus {
+	PENDING,
     PLACED,
     ACCEPTED,
     
