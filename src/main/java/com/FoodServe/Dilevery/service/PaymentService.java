@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.FoodServe.Dilevery.Userrepository.OrderRepository;
+import com.FoodServe.Dilevery.UtilityClass.HmacSHA256;
+import com.FoodServe.Dilevery.dto.PaymentVerifyRequestDto;
 import com.FoodServe.Dilevery.entity.OrdersEntity;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
@@ -15,6 +18,10 @@ import com.razorpay.RazorpayClient;
 public class PaymentService {
 
    
+	@Value("${razorpay.key}")
+	private String secret;
+	
+	
 
 	private final OrderRepository orderRepository;
 
@@ -27,7 +34,7 @@ public class PaymentService {
         OrdersEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        RazorpayClient client = new RazorpayClient("rzp_test_SjzVLofk9UEl3y", "JzfyyBwUEJzNe5CfGEmkLx7L");
+        RazorpayClient client = new RazorpayClient("rzp_test_Snk8buh7h4y2Uq", secret);
 
         JSONObject options = new JSONObject();
         options.put("amount", order.getTotalAmount() * 100);
@@ -43,4 +50,27 @@ public class PaymentService {
 
         return response;
     }
+    
+    
+    public boolean verifyPayment(
+            PaymentVerifyRequestDto request) {
+
+        try {
+
+            String generatedSignature =
+                    HmacSHA256.calculateHMAC(
+                            request.getRazorpayOrderId()
+                                    + "|" +
+                            request.getRazorpayPaymentId(),
+                            secret
+                    );
+
+            return generatedSignature.equals(
+                    request.getRazorpaySignature());
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+   
 }

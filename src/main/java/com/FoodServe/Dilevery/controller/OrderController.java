@@ -28,15 +28,15 @@ public class OrderController {
         return orderService.createOrder(order);
     }
     
-    @PostMapping("/orders")
-    public ResponseEntity<?> placeOrder(@RequestBody OrderRequestDTO dto) {
-        try {
-            return ResponseEntity.ok(orderService.createOrder(dto));
-        } catch (Exception e) {
-            e.printStackTrace();   // 👉 यहीं असली कारण दिखेगा
-            return ResponseEntity.status(500).body(e.getMessage());
-        }
-    }
+//    @PostMapping("/orders")
+//    public ResponseEntity<?> placeOrder(@RequestBody OrderRequestDTO dto) {
+//        try {
+//            return ResponseEntity.ok(orderService.createOrder(dto));
+//        } catch (Exception e) {
+//            e.printStackTrace();   // 👉 यहीं असली कारण दिखेगा
+//            return ResponseEntity.status(500).body(e.getMessage());
+//        }
+//    }
     
     @PostMapping("/confirm/{orderId}")
     public OrdersEntity confirmOrder(@PathVariable("orderId") Long orderId){

@@ -1,11 +1,10 @@
 package com.FoodServe.Dilevery.controller;
 
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.FoodServe.Dilevery.UtilityClass.HmacSHA256;
 import com.FoodServe.Dilevery.dto.PaymentVerifyRequestDto;
@@ -16,7 +15,9 @@ import com.FoodServe.Dilevery.service.PaymentService;
 public class PaymentController {
 
     private final PaymentService paymentService;
-
+    
+    @Value("{${razorpay.key}")
+    private String secret;
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
@@ -28,34 +29,63 @@ public class PaymentController {
         return ResponseEntity.ok(
                 paymentService.createPaymentOrder(id));
     }
-    
     @PostMapping("/verify")
     public ResponseEntity<?> verifyPayment(
             @RequestBody PaymentVerifyRequestDto request) {
 
         try {
 
+            String data =
+                    request.getRazorpayOrderId()
+                    + "|"
+                    + request.getRazorpayPaymentId();
+
+            System.out.println("DATA: " + data);
+
             String generatedSignature =
                     HmacSHA256.calculateHMAC(
-                            request.getRazorpayOrderId() + "|" +
-                            request.getRazorpayPaymentId(),
-                            "rzp_test_SjzVLofk9UEl3y"
+                            data,
+                            secret
                     );
 
-            if(generatedSignature.equals(request.getRazorpaySignature())) {
+            System.out.println(
+                    "Generated Signature: "
+                    + generatedSignature);
+
+            System.out.println(
+                    "Razorpay Signature: "
+                    + request.getRazorpaySignature());
+
+            if(generatedSignature.equals(
+                    request.getRazorpaySignature())) {
 
                 return ResponseEntity.ok(
-                        "Payment Success & Order Confirmed"
+                        Map.of(
+                            "message",
+                            "Payment Success & Order Confirmed"
+                        )
                 );
             }
 
             return ResponseEntity.badRequest()
-                    .body("Invalid Signature");
+                    .body(
+                        Map.of(
+                            "message",
+                            "Invalid Signature"
+                        )
+                    );
 
         } catch (Exception e) {
 
+            e.printStackTrace();
+
             return ResponseEntity.internalServerError()
-                    .body(e.getMessage());
+                    .body(
+                        Map.of(
+                            "message",
+                            e.getMessage()
+                        )
+                    );
         }
     }
 }
