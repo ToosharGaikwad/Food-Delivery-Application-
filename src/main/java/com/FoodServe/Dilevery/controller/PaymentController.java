@@ -16,8 +16,8 @@ public class PaymentController {
 
     private final PaymentService paymentService;
     
-    @Value("{${razorpay.key}")
-    private String secret;
+//    @Value("{${razorpay.key}")
+//    private String secret;
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
@@ -35,29 +35,10 @@ public class PaymentController {
 
         try {
 
-            String data =
-                    request.getRazorpayOrderId()
-                    + "|"
-                    + request.getRazorpayPaymentId();
+            boolean isValid =
+                    paymentService.confirmPayment(request);
 
-            System.out.println("DATA: " + data);
-
-            String generatedSignature =
-                    HmacSHA256.calculateHMAC(
-                            data,
-                            secret
-                    );
-
-            System.out.println(
-                    "Generated Signature: "
-                    + generatedSignature);
-
-            System.out.println(
-                    "Razorpay Signature: "
-                    + request.getRazorpaySignature());
-
-            if(generatedSignature.equals(
-                    request.getRazorpaySignature())) {
+            if(isValid) {
 
                 return ResponseEntity.ok(
                         Map.of(

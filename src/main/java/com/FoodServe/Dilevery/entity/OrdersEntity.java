@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.FoodServe.Dilevery.Enum.OrderStatus;
+import com.FoodServe.Dilevery.Enum.PaymentStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,17 +42,16 @@ public class OrdersEntity {
 	    private String paymentMode;
 	    
 	    
-
-		@Column(name = "payment_status")
-	    private String paymentStatus;
 	    
 		@ManyToOne
 		@JoinColumn(name = "delivery_boy_id")
 		private DeliveryBoyEntity deliveryBoy;
 		
+		@Enumerated(EnumType.STRING)
+		private PaymentStatus paymentStatus;
 		
-	    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	    private List<OrderItem> items;
+		@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+		private List<OrderItem> items;
 	    
 	    // Many orders belong to one user
 	    @ManyToOne
@@ -116,13 +117,17 @@ public class OrdersEntity {
 			this.paymentMode = paymentMode;
 		}
 
-		public String getPaymentStatus() {
+		
+
+		public PaymentStatus getPaymentStatus() {
 			return paymentStatus;
 		}
 
-		public void setPaymentStatus(String paymentStatus) {
+
+		public void setPaymentStatus(PaymentStatus paymentStatus) {
 			this.paymentStatus = paymentStatus;
 		}
+
 
 		public User getUser() {
 			return user;

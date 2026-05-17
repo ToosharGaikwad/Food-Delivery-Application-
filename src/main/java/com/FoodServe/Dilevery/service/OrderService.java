@@ -1,17 +1,18 @@
 package com.FoodServe.Dilevery.service;
 
+import java.io.ByteArrayOutputStream;
+import java.lang.annotation.Documented;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.jaxb.SpringDataJaxb.OrderDto;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.FoodServe.Dilevery.Enum.OrderStatus;
 import com.FoodServe.Dilevery.Userrepository.OrderRepository;
 import com.FoodServe.Dilevery.Userrepository.ProductRepository;
@@ -22,6 +23,10 @@ import com.FoodServe.Dilevery.entity.OrderItem;
 import com.FoodServe.Dilevery.entity.OrdersEntity;
 import com.FoodServe.Dilevery.entity.Product;
 import com.FoodServe.Dilevery.entity.User;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+
 @Service
 public class OrderService {
 
@@ -87,7 +92,7 @@ public class OrderService {
             throw new RuntimeException("Order already processed");
         }
 
-        order.setOrderStatus(OrderStatus.PLACED);
+        order.setOrderStatus(OrderStatus.CONFIRMED);
 
         return orderRepository.save(order);
     }
@@ -130,6 +135,86 @@ public class OrderService {
 
 	    return orderRepository.save(order);
 	}
+	
+	
+	@Transactional
+	public ResponseEntity<byte[]> downloadReceipt(Long orderId) {
+
+	    try {
+
+	        OrdersEntity order = orderRepository.findById(orderId)
+	                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+	        if(order.getItems() == null) {
+	            throw new RuntimeException("Items not found");
+	        }
+
+	        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+	        Document document = new Document();
+
+	        PdfWriter.getInstance(document, out);
+
+	        document.open();
+
+	        document.add(new Paragraph("Food Delivery Receipt"));
+	        document.add(new Paragraph("------------------------"));
+
+	        document.add(new Paragraph("Order ID : " + order.getOrderId()));
+
+	        document.add(new Paragraph(""));
+
+	        for (OrderItem item : order.getItems()) {
+
+	            document.add(
+	                new Paragraph(
+	                    item.getProduct().getName()
+	                    + " X "
+	                    + item.getQuantity()
+	                    + " = ₹"
+	                    + (item.getPrice() * item.getQuantity())
+	                )
+	            );
+	        }
+
+	        document.add(new Paragraph(""));
+	        document.add(new Paragraph("Payment Status : SUCCESS"));
+
+	        document.close();
+
+	        HttpHeaders headers = new HttpHeaders();
+
+	        headers.add(
+	            "Content-Disposition",
+	            "attachment; filename=receipt.pdf"
+	        );
+
+	        return ResponseEntity.ok()
+	                .headers(headers)
+	                .contentType(MediaType.APPLICATION_PDF)
+	                .body(out.toByteArray());
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity.internalServerError().build();
+	    }
+	}
+	public OrdersEntity getLatestOrder(String email) {
+
+	    return orderRepository
+	            .findTopByUserEmailOrderByOrderDateDesc(email)
+	            .orElseThrow(() ->
+	                new RuntimeException("No order found"));
+	}
+	
+	}
+
+	 
+
+	
+
+	
     
     
-}

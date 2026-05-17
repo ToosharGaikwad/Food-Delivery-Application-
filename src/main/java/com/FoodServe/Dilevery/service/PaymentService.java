@@ -6,7 +6,10 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.FoodServe.Dilevery.Enum.OrderStatus;
+import com.FoodServe.Dilevery.Enum.PaymentStatus;
 import com.FoodServe.Dilevery.Userrepository.OrderRepository;
 import com.FoodServe.Dilevery.UtilityClass.HmacSHA256;
 import com.FoodServe.Dilevery.dto.PaymentVerifyRequestDto;
@@ -18,8 +21,8 @@ import com.razorpay.RazorpayClient;
 public class PaymentService {
 
    
-	@Value("${razorpay.key}")
-	private String secret;
+//	@Value("${razorpay.key}")
+//	private String secret;
 	
 	
 
@@ -34,7 +37,7 @@ public class PaymentService {
         OrdersEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        RazorpayClient client = new RazorpayClient("rzp_test_Snk8buh7h4y2Uq", secret);
+        RazorpayClient client = new RazorpayClient("rzp_test_Sq4Unk8n88bXHr","r0InnNK1ZQmMM0v9W3tbFS2q" );
 
         JSONObject options = new JSONObject();
         options.put("amount", order.getTotalAmount() * 100);
@@ -51,8 +54,10 @@ public class PaymentService {
         return response;
     }
     
+ // Add logging here to see what's happening
     
-    public boolean verifyPayment(
+    @Transactional
+    public boolean confirmPayment(
             PaymentVerifyRequestDto request) {
 
         try {
@@ -62,13 +67,48 @@ public class PaymentService {
                             request.getRazorpayOrderId()
                                     + "|" +
                             request.getRazorpayPaymentId(),
-                            secret
+                            "r0InnNK1ZQmMM0v9W3tbFS2q"
                     );
 
-            return generatedSignature.equals(
-                    request.getRazorpaySignature());
+            // ✅ Debug logs
+            System.out.println("Generated : "
+                    + generatedSignature);
+
+            System.out.println("Received : "
+                    + request.getRazorpaySignature());
+
+            boolean isValid =
+                    generatedSignature.equals(
+                            request.getRazorpaySignature());
+
+            // ✅ If payment valid
+            if(isValid) {
+
+                OrdersEntity order =
+                        orderRepository.findById(
+                                request.getOrderId())
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Order not found"));
+
+                order.setOrderStatus(
+                        OrderStatus.CONFIRMED);
+
+                order.setPaymentStatus(
+                        PaymentStatus.PAID);
+
+                orderRepository.save(order);
+
+                System.out.println("ORDER CONFIRMED");
+            }
+
+            // ✅ RETURN RESULT
+            return isValid;
 
         } catch (Exception e) {
+
+            e.printStackTrace();
+
             return false;
         }
     }
