@@ -24,7 +24,9 @@ import com.FoodServe.Dilevery.entity.OrdersEntity;
 import com.FoodServe.Dilevery.entity.Product;
 import com.FoodServe.Dilevery.entity.User;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
 
 @Service
@@ -135,59 +137,68 @@ public class OrderService {
 
 	    return orderRepository.save(order);
 	}
+	public OrdersEntity getLatestOrder(String email) {
+	    return orderRepository
+	            .findTopByUserEmailOrderByOrderDateDesc(email)
+	            .orElseThrow(() -> new RuntimeException("No order found for: " + email));
+	}
 	
-	
-	@Transactional
+	@Transactional(readOnly = true)
 	public ResponseEntity<byte[]> downloadReceipt(Long orderId) {
 
 	    try {
+	        System.out.println("Download receipt called for: " + orderId);
 
-	        OrdersEntity order = orderRepository.findById(orderId)
-	                .orElseThrow(() -> new RuntimeException("Order not found"));
+	        OrdersEntity order = orderRepository.findByIdWithItems(orderId)
+	                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
-	        if(order.getItems() == null) {
-	            throw new RuntimeException("Items not found");
+	        List<OrderItem> items = order.getItems();
+
+	        if (items == null || items.isEmpty()) {
+	            throw new RuntimeException("No items found for order: " + orderId);
 	        }
 
+	        System.out.println("Items count: " + items.size());
+
 	        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
 	        Document document = new Document();
-
 	        PdfWriter.getInstance(document, out);
-
 	        document.open();
 
 	        document.add(new Paragraph("Food Delivery Receipt"));
-	        document.add(new Paragraph("------------------------"));
-
+	        document.add(new Paragraph("----------------------"));
 	        document.add(new Paragraph("Order ID : " + order.getOrderId()));
+	        document.add(new Paragraph(" "));
 
-	        document.add(new Paragraph(""));
+	        double grandTotal = 0;
 
-	        for (OrderItem item : order.getItems()) {
+	        for (OrderItem item : items) {
+	            if (item == null || item.getProduct() == null) {
+	                System.out.println("Skipping null item");
+	                continue;
+	            }
 
-	            document.add(
-	                new Paragraph(
-	                    item.getProduct().getName()
-	                    + " X "
-	                    + item.getQuantity()
-	                    + " = ₹"
-	                    + (item.getPrice() * item.getQuantity())
-	                )
-	            );
+	            String name = item.getProduct().getName();
+	            double qty = item.getQuantity();
+	            double price = item.getPrice();
+	            double lineTotal = qty * price;
+	            grandTotal += lineTotal;
+
+	            document.add(new Paragraph(name + " x " + (int) qty + " = Rs." + lineTotal));
 	        }
 
-	        document.add(new Paragraph(""));
-	        document.add(new Paragraph("Payment Status : SUCCESS"));
+	        document.add(new Paragraph(" "));
+	        document.add(new Paragraph("Total Amount : Rs." + grandTotal));
+	        document.add(new Paragraph("Payment Mode : " + order.getPaymentMode()));
+	        document.add(new Paragraph("Order Status : " + order.getOrderStatus()));
 
 	        document.close();
 
 	        HttpHeaders headers = new HttpHeaders();
+	        headers.add("Content-Disposition",
+	                "attachment; filename=receipt-" + orderId + ".pdf");
 
-	        headers.add(
-	            "Content-Disposition",
-	            "attachment; filename=receipt.pdf"
-	        );
+	        System.out.println("Receipt generated successfully for: " + orderId);
 
 	        return ResponseEntity.ok()
 	                .headers(headers)
@@ -195,18 +206,9 @@ public class OrderService {
 	                .body(out.toByteArray());
 
 	    } catch (Exception e) {
-
 	        e.printStackTrace();
-
-	        return ResponseEntity.internalServerError().build();
+	        throw new RuntimeException(e);
 	    }
-	}
-	public OrdersEntity getLatestOrder(String email) {
-
-	    return orderRepository
-	            .findTopByUserEmailOrderByOrderDateDesc(email)
-	            .orElseThrow(() ->
-	                new RuntimeException("No order found"));
 	}
 	
 	}

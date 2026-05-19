@@ -68,9 +68,11 @@ public class SecurityConfig {
             	    // ✅ ADMIN-only POST/PUT operations
             	    .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
             	    .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
-            	   	.requestMatchers(HttpMethod.GET,"/receipt/{orderId}").permitAll()
+            	    .requestMatchers(HttpMethod.GET,"/receipt/**").permitAll()
             	    .requestMatchers(HttpMethod.PUT, "/orders/*/status").hasAnyRole("ADMIN", "RESTAURANT_MAN")  // ✅
-            	    .requestMatchers("/payment/**").permitAll()
+            	    .requestMatchers(HttpMethod.POST,"/payment/**").permitAll()
+            	    
+            	    
             	    .anyRequest().authenticated()
             	)
             .sessionManagement(session ->
