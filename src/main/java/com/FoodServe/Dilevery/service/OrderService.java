@@ -25,6 +25,7 @@ import com.FoodServe.Dilevery.entity.Product;
 import com.FoodServe.Dilevery.entity.User;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -161,7 +162,7 @@ public class OrderService {
 	        System.out.println("Items count: " + items.size());
 
 	        ByteArrayOutputStream out = new ByteArrayOutputStream();
-	        Document document = new Document();
+	        Document document = new Document(PageSize.A6);
 	        PdfWriter.getInstance(document, out);
 	        document.open();
 
