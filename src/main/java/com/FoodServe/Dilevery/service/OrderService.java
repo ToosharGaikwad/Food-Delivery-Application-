@@ -1,10 +1,10 @@
 package com.FoodServe.Dilevery.service;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.annotation.Documented;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,16 +19,17 @@ import com.FoodServe.Dilevery.Userrepository.ProductRepository;
 import com.FoodServe.Dilevery.Userrepository.UserRepository;
 import com.FoodServe.Dilevery.dto.OrderItemRequestDTO;
 import com.FoodServe.Dilevery.dto.OrderRequestDTO;
+import com.FoodServe.Dilevery.entity.DeliveryBoyEntity;
 import com.FoodServe.Dilevery.entity.OrderItem;
 import com.FoodServe.Dilevery.entity.OrdersEntity;
 import com.FoodServe.Dilevery.entity.Product;
 import com.FoodServe.Dilevery.entity.User;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.log.SysoCounter;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.FoodServe.Dilevery.Userrepository.DeliveryBoyRepository;
 
 @Service
 public class OrderService {
@@ -36,13 +37,23 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final DeliveryBoyService deliveryBoyService;
+    private final DeliveryBoyRepository deliveryBoyRepository;
+    
     public OrderService(OrderRepository orderRepository,
-                        ProductRepository productRepository,
-                        UserRepository userRepository) {
-        this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
-        this.userRepository = userRepository;
-    }
+            ProductRepository productRepository,
+            UserRepository userRepository,
+            DeliveryBoyService deliveryBoyService,
+            DeliveryBoyRepository deliveryBoyRepository
+           ) {
+
+this.orderRepository = orderRepository;
+this.productRepository = productRepository;
+this.userRepository = userRepository;
+this.deliveryBoyService = deliveryBoyService;
+this.deliveryBoyRepository = deliveryBoyRepository;
+
+}
 
     public OrdersEntity createOrder(OrderRequestDTO dto) {
 
@@ -83,23 +94,41 @@ public class OrderService {
         System.out.println(items +" all items");
         return orderRepository.save(order);
     }
+  
     
-
+       
+    @Transactional
     public OrdersEntity confirmOrder(Long orderId) {
 
         OrdersEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // ✅ Only confirm if still pending
         if (order.getOrderStatus() != OrderStatus.PENDING) {
             throw new RuntimeException("Order already processed");
         }
 
+        // confirm order
         order.setOrderStatus(OrderStatus.CONFIRMED);
+
+        // get available boys
+        List<DeliveryBoyEntity> boys =
+                deliveryBoyRepository.findByAvailableTrue();
+
+        if (boys.isEmpty()) {
+            throw new RuntimeException("No delivery boy available");
+        }
+
+        // random boy selection
+        Random random = new Random();
+
+        DeliveryBoyEntity selectedBoy =
+                boys.get(random.nextInt(boys.size()));
+
+        // call existing method
+        deliveryBoyService.assignDeliveryBoy(orderId, selectedBoy.getId());
 
         return orderRepository.save(order);
     }
-    
     
     
     public OrdersEntity getorder(Long orderId){

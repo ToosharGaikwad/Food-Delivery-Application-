@@ -33,14 +33,20 @@ public class DeliveryBoyService {
         if (!boy.isAvailable()) {
             throw new RuntimeException("Delivery boy not available");
         }
+        if(order.getOrderStatus() != OrderStatus.CONFIRMED){
+            throw new RuntimeException("Order not confirmed yet");
+        }
 
         order.setDeliveryBoy(boy);
-        order.setOrderStatus(OrderStatus.OUT_FOR_DELIVERY);
+        order.setOrderStatus(OrderStatus.PREPARING);
 
         boy.setAvailable(false);
 
         return orderRepository.save(order);
     }
+    
+    
+    
 
     public OrdersEntity markDelivered(Long orderId) {
 

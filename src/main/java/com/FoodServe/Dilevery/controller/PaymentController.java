@@ -32,14 +32,10 @@ public class PaymentController {
     @PostMapping("/verify")
     public ResponseEntity<?> verifyPayment(
             @RequestBody PaymentVerifyRequestDto request) {
-
         try {
-
             boolean isValid =
                     paymentService.confirmPayment(request);
-
             if(isValid) {
-
                 return ResponseEntity.ok(
                         Map.of(
                             "message",
@@ -47,19 +43,15 @@ public class PaymentController {
                         )
                 );
             }
-
             return ResponseEntity.badRequest()
                     .body(
                         Map.of(
-                            "message",
-                            "Invalid Signature"
+                            "message",                            "Invalid Signature"
                         )
                     );
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
             return ResponseEntity.internalServerError()
                     .body(
                         Map.of(

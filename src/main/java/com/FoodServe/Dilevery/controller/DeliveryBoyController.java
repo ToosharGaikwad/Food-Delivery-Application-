@@ -40,7 +40,7 @@ public class DeliveryBoyController {
         return deliveryBoyService.markDelivered(orderId);
     }
     // ✅ ADD DELIVERY BOY (FIRST API)
-    @PreAuthorize("hasRole('ADMIN')")
+    
     @PostMapping("/addBoy")
     public DeliveryBoyEntity addDeliveryBoy(@RequestBody DeliveryBoyEntity boy) {
         return deliveryBoyService.addDeliveryBoy(boy);

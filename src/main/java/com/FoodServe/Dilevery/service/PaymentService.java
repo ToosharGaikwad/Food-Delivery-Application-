@@ -1,7 +1,9 @@
 package com.FoodServe.Dilevery.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.FoodServe.Dilevery.Enum.OrderStatus;
 import com.FoodServe.Dilevery.Enum.PaymentStatus;
+import com.FoodServe.Dilevery.Userrepository.DeliveryBoyRepository;
 import com.FoodServe.Dilevery.Userrepository.OrderRepository;
 import com.FoodServe.Dilevery.UtilityClass.HmacSHA256;
 import com.FoodServe.Dilevery.dto.PaymentVerifyRequestDto;
+import com.FoodServe.Dilevery.entity.DeliveryBoyEntity;
 import com.FoodServe.Dilevery.entity.OrdersEntity;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
@@ -26,10 +30,12 @@ public class PaymentService {
 	
 	
 
+	private  DeliveryBoyRepository deliveryBoyRepository;
 	private final OrderRepository orderRepository;
 
-    public PaymentService(OrderRepository orderRepository) {
+    public PaymentService(OrderRepository orderRepository,DeliveryBoyRepository deliveryBoyRepository) {
         this.orderRepository = orderRepository;
+        this.deliveryBoyRepository = deliveryBoyRepository;
     }
 
     public Map<String, Object> createPaymentOrder(Long orderId) throws Exception {
@@ -96,6 +102,28 @@ public class PaymentService {
 
                 order.setPaymentStatus(
                         PaymentStatus.PAID);
+              
+                List<DeliveryBoyEntity> boys = deliveryBoyRepository.findByAvailableTrue();
+
+                if (boys.isEmpty()) {
+                    throw new RuntimeException("No delivery boy available");
+                }
+
+                Random random = new Random();
+                DeliveryBoyEntity selectedBoy = boys.get(random.nextInt(boys.size()));
+
+                System.out.println("Selected Boy ID: " + selectedBoy.getId());
+
+                // ✅ Bug 2 Fixed: mark delivery boy as unavailable
+                selectedBoy.setAvailable(false);
+                deliveryBoyRepository.save(selectedBoy);  // save the boy too
+
+                order.setDeliveryBoy(selectedBoy);
+
+                OrdersEntity saved = orderRepository.save(order);
+
+                System.out.println("Saved Successfully with boy: " + selectedBoy.getName());
+
 
                 orderRepository.save(order);
 

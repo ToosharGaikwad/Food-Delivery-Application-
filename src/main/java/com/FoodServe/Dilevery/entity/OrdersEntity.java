@@ -25,7 +25,7 @@ import jakarta.persistence.Table;
 public class OrdersEntity {
 	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    @Column(name = "orderId")
+	    @Column(name = "order_id")
 	    private Long orderId;
 	    
 	    @Column(name = "order_date")
@@ -41,11 +41,9 @@ public class OrdersEntity {
 	    @Column(name = "payment_mode")
 	    private String paymentMode;
 	    
-	    
-	    
-		@ManyToOne
-		@JoinColumn(name = "delivery_boy_id")
-		private DeliveryBoyEntity deliveryBoy;
+	    @ManyToOne(fetch = FetchType.EAGER)
+	    @JoinColumn(name = "delivery_boy_id")
+	    private DeliveryBoyEntity deliveryBoy;
 		
 		@Enumerated(EnumType.STRING)
 		private PaymentStatus paymentStatus;
@@ -136,6 +134,9 @@ public class OrdersEntity {
 		public void setUser(User user) {
 			this.user = user;
 		}
+
+
+		
 
 		
 
