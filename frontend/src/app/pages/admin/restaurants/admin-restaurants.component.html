@@ -1,0 +1,62 @@
+<div class="admin-panel">
+  <div class="panel-header">
+    <h2>Restaurants</h2>
+    @if (!showForm()) {
+      <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">Add Restaurant</button>
+    }
+  </div>
+
+  @if (showForm()) {
+    <form class="card form-card" (ngSubmit)="save()">
+      <h3>{{ editing() ? 'Edit' : 'New' }} Restaurant</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name</label>
+          <input [(ngModel)]="form.name" name="name" class="input" required />
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input [(ngModel)]="form.address" name="address" class="input" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Rating</label>
+          <input type="number" step="0.1" [(ngModel)]="form.rating" name="rating" class="input" />
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="form.open" name="open" />
+            Open for orders
+          </label>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  }
+
+  <div class="data-table card">
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Address</th><th>Rating</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        @for (r of restaurants(); track r.id) {
+          <tr>
+            <td><strong>{{ r.name }}</strong></td>
+            <td>{{ r.address }}</td>
+            <td>★ {{ r.rating | number:'1.1-1' }}</td>
+            <td>{{ r.open ? 'Open' : 'Closed' }}</td>
+            <td class="actions-cell">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="openEdit(r)">Edit</button>
+              <button type="button" class="btn btn-danger btn-sm" (click)="delete(r.id)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

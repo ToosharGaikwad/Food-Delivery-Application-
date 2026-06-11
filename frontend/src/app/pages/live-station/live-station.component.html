@@ -1,0 +1,49 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Live Station</h1>
+    <p>Check upcoming trains at your station via IRCTC</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container live-station-layout">
+    <form class="card search-card" (ngSubmit)="search()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="station">Station Code</label>
+          <input
+            id="station"
+            [(ngModel)]="stationCode"
+            name="stationCode"
+            class="input"
+            placeholder="e.g. NDLS, BCT"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="hours">Hours Ahead</label>
+          <input
+            id="hours"
+            type="number"
+            min="1"
+            max="8"
+            [(ngModel)]="hours"
+            name="hours"
+            class="input"
+            required
+          />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="loading()">
+        {{ loading() ? 'Fetching…' : 'Get Live Data' }}
+      </button>
+    </form>
+
+    @if (result()) {
+      <div class="card result-card">
+        <h2>Results for {{ stationCode | uppercase }}</h2>
+        <pre class="result-pre">{{ result() }}</pre>
+      </div>
+    }
+  </div>
+</section>

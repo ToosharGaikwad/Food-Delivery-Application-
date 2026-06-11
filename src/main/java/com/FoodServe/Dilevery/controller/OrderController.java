@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.FoodServe.Dilevery.dto.OrderRequestDTO;
 import com.FoodServe.Dilevery.entity.OrdersEntity;
 import com.FoodServe.Dilevery.service.OrderService;
-@CrossOrigin(origins = "http://localhost:4200")
+
 @RestController 
 @RequestMapping("/orders")
 public class OrderController {

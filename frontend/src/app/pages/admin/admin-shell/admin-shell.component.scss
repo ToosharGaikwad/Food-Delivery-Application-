@@ -1,0 +1,48 @@
+.admin-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  padding-bottom: 4rem;
+  align-items: start;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 5rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  a {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    transition: all 0.2s;
+
+    &:hover, &.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+
+    a {
+      white-space: nowrap;
+    }
+  }
+}

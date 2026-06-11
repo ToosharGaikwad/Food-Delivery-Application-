@@ -3,6 +3,7 @@ package com.FoodServe.Dilevery.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.FoodServe.Dilevery.Userrepository.RestaurantRepository;
 import com.FoodServe.Dilevery.entity.Restaurant;
@@ -12,11 +13,9 @@ public class RestaurentServiceImpl implements RestaurantService{
 
 	
 	 private final RestaurantRepository restaurantRepository;
-	 
-	 
-	public RestaurentServiceImpl(RestaurantRepository restaurantRepository) {
-		this.restaurantRepository = restaurantRepository;
-	}
+	 public RestaurentServiceImpl(RestaurantRepository restaurantRepository) {
+		    this.restaurantRepository = restaurantRepository;
+		}
 
 	@Override
 	public Restaurant saveRestaurant(Restaurant restaurant) {
@@ -37,5 +36,20 @@ public class RestaurentServiceImpl implements RestaurantService{
 	public void deleteRestaurant(Long id) {
 	    restaurantRepository.deleteById(id);
 	}
+	
+	@Transactional
+	public Restaurant updateRestaurant(Long id, Restaurant restaurantDetail) {
+
+		Restaurant restaurant1 = restaurantRepository.findById(id)
+		        .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+		
+		restaurant1.setAddress(restaurantDetail.getAddress());
+		restaurant1.setName(restaurantDetail.getName());
+		restaurant1.setRating(restaurantDetail.getRating());
+		restaurant1.setOpen(restaurantDetail.isOpen());
+		
+		 return restaurantRepository.save(restaurant1);
+	}
+	
 	 
 }

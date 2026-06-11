@@ -1,0 +1,72 @@
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-text">
+      <span class="hero-tag">Train-side food delivery</span>
+      <h1>Fresh meals delivered to your station</h1>
+      <p>Browse restaurants near your route, order while you travel, and track delivery in real time.</p>
+      <div class="hero-actions">
+        <a routerLink="/restaurants" class="btn btn-primary btn-lg">Browse Restaurants</a>
+        <a routerLink="/live-station" class="btn btn-outline btn-lg">Check Live Station</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-card">
+        <span class="hero-emoji">🚂</span>
+        <p>Order at the station,<br/>enjoy on the train</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Popular Restaurants</h2>
+      <a routerLink="/restaurants" class="link-arrow">View all →</a>
+    </div>
+
+    @if (loading()) {
+      <div class="grid-loading">Loading restaurants…</div>
+    } @else if (!restaurants().length) {
+      <div class="empty-state">No open restaurants right now.</div>
+    } @else {
+      <div class="restaurant-grid">
+        @for (r of restaurants(); track r.id) {
+          <a [routerLink]="['/restaurants', r.id]" class="restaurant-card">
+            <div class="card-image">
+              <span>{{ r.name.charAt(0) }}</span>
+            </div>
+            <div class="card-body">
+              <h3>{{ r.name }}</h3>
+              <p class="card-address">{{ r.address }}</p>
+              <div class="card-meta">
+                <span class="rating">★ {{ r.rating | number:'1.1-1' }}</span>
+                <span class="badge-open">Open</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<section class="features section-alt">
+  <div class="container features-grid">
+    <div class="feature-item">
+      <span class="feature-icon">⚡</span>
+      <h3>Fast Ordering</h3>
+      <p>Pick a restaurant, add items to cart, and checkout in minutes.</p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">💳</span>
+      <h3>Secure Payment</h3>
+      <p>Pay safely via Razorpay with instant order confirmation.</p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">📍</span>
+      <h3>Live Tracking</h3>
+      <p>Check train schedules and station arrivals in real time.</p>
+    </div>
+  </div>
+</section>

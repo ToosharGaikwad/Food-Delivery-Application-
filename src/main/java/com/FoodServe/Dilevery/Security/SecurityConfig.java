@@ -39,7 +39,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:4200"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
@@ -69,6 +69,7 @@ public class SecurityConfig {
             	    .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
             	    .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
             	    .requestMatchers(HttpMethod.GET,"/receipt/**").permitAll()
+            	    .requestMatchers(HttpMethod.PUT, "/res/update/**").permitAll()
             	    .requestMatchers(HttpMethod.PUT, "/orders/*/status").hasAnyRole("ADMIN", "RESTAURANT_MAN")  // ✅
             	    .requestMatchers(HttpMethod.POST,"/payment/**").permitAll()
             	    

@@ -1,0 +1,21 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <p>Manage restaurants, orders, and deliveries</p>
+  </div>
+</div>
+
+<div class="container admin-layout">
+  <nav class="admin-sidebar card">
+    @if (auth.isAdmin()) {
+      <a routerLink="/admin/restaurants" routerLinkActive="active">Restaurants</a>
+      <a routerLink="/admin/products" routerLinkActive="active">Products</a>
+      <a routerLink="/admin/delivery" routerLinkActive="active">Delivery Boys</a>
+      <a routerLink="/admin/trains" routerLinkActive="active">Train Tracking</a>
+    }
+    <a routerLink="/admin/orders" routerLinkActive="active">Orders</a>
+  </nav>
+  <div class="admin-content">
+    <router-outlet />
+  </div>
+</div>

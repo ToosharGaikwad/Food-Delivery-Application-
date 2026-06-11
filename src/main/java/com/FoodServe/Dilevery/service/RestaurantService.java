@@ -6,7 +6,12 @@ import com.FoodServe.Dilevery.entity.Restaurant;
 
 public interface RestaurantService {
 
-	public Restaurant saveRestaurant(Restaurant restaurant);
-	List<Restaurant> getAllRestaurant();
-	Restaurant getRestaurantById(Long id);
+    Restaurant saveRestaurant(Restaurant restaurant);
+
+    List<Restaurant> getAllRestaurant();
+
+    Restaurant getRestaurantById(Long id);
+
+    void deleteRestaurant(Long id);
+    Restaurant updateRestaurant(Long id, Restaurant restaurantDetail);
 }

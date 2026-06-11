@@ -1,0 +1,57 @@
+<div class="admin-panel">
+  <div class="panel-header">
+    <h2>Delivery Boys</h2>
+    @if (!showForm()) {
+      <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">Add Delivery Boy</button>
+    }
+  </div>
+
+  @if (showForm()) {
+    <form class="card form-card" (ngSubmit)="save()">
+      <h3>New Delivery Boy</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name</label>
+          <input [(ngModel)]="form.name" name="name" class="input" required />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input [(ngModel)]="form.phone" name="phone" class="input" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="form.available" name="available" />
+          Available
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  }
+
+  @if (addedBoys().length) {
+    <div class="data-table card">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Phone</th><th>Available</th></tr>
+        </thead>
+        <tbody>
+          @for (b of addedBoys(); track b.id) {
+            <tr>
+              <td><strong>{{ b.id }}</strong></td>
+              <td>{{ b.name }}</td>
+              <td>{{ b.phone }}</td>
+              <td>{{ b.available ? 'Yes' : 'No' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p class="hint">Use the ID when assigning delivery boys to orders.</p>
+    </div>
+  } @else {
+    <div class="empty-state card">Add delivery boys to assign them to orders.</div>
+  }
+</div>
