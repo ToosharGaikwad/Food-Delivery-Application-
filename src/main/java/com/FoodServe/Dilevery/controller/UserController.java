@@ -10,10 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.FoodServe.Dilevery.Enum.Role;
@@ -56,8 +59,15 @@ public class UserController {
         userLoginService.register(request);
         return ResponseEntity.ok("User registered successfully");
     }
-
     
+    @PutMapping("/update/{id}")
+    public ResponseEntity<User> updateUser( @PathVariable("id") Long id,
+    		 @RequestBody User user){
+    	
+    	User udUser = userLoginService.updateUser(user, id);
+    	 return ResponseEntity.ok(udUser);
+    	
+    }
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
 

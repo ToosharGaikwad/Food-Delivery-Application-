@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.FoodServe.Dilevery.Userrepository.UserRepository;
 import com.FoodServe.Dilevery.dto.LoginRequest;
@@ -41,6 +42,18 @@ public class UserLoginSevice {
         user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(request.getPassword()));     
         return userRepository.save(user);
+    }
+    
+    @Transactional
+    public User updateUser(User userdetails,Long id) {
+    	User user = userRepository.findById(id)
+    			.orElseThrow(()-> new RuntimeException("user not found"));
+    	
+    	user.setEmail(userdetails.getEmail());
+    	user.setPassword(userdetails.getPassword());
+    	user.setRole(userdetails.getRole());
+    	user.setUsername(userdetails.getUsername());
+    	return userRepository.save(user);   			
     }
     
     

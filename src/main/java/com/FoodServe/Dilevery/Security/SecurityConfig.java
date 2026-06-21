@@ -57,7 +57,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth	
             	    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            	    .requestMatchers("/api/users/login", "/logout", "/api/users/register").permitAll()
+            	    .requestMatchers("/api/users/login", "/logout", "/api/users/register","/api/user/update/**").permitAll()
             	    // ✅ DELETE requires ADMIN
             	    .requestMatchers(HttpMethod.DELETE, "/res/id/**").hasRole("ADMIN")
             	    // ✅ Public GET endpoints
@@ -70,6 +70,7 @@ public class SecurityConfig {
             	    .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
             	    .requestMatchers(HttpMethod.GET,"/receipt/**").permitAll()
             	    .requestMatchers(HttpMethod.PUT, "/res/update/**").permitAll()
+            	    .requestMatchers(HttpMethod.PUT, "/api/products/update/**").permitAll()
             	    .requestMatchers(HttpMethod.PUT, "/orders/*/status").hasAnyRole("ADMIN", "RESTAURANT_MAN")  // ✅
             	    .requestMatchers(HttpMethod.POST,"/payment/**").permitAll()
             	    

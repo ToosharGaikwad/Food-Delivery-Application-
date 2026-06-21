@@ -33,6 +33,21 @@ public class ProductService {
     public List<Product> getAllProduct() {
         return productRepository.findAll();
     }
+    
+    public Product updateProduct(Long id ,Product productdetails) {
+    	Product product = productRepository.findById(id)
+    			.orElseThrow(()-> new RuntimeException("product is not found"));
+    	product.setCategory(productdetails.getCategory());
+    	product.setName(productdetails.getName());
+    	product.setPrice(productdetails.getPrice());
+    	product.setRestaurant(productdetails.getRestaurant());
+    	product.setAvailable(productdetails.isAvailable());
+    	
+    	return productRepository.save(product);
+    }
+    
+    
+    
 
     // ✅ Add product (FIXED)
     public Product addProduct(Product product) {
